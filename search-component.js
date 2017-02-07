@@ -12,47 +12,40 @@
         }
 
         set value(value) {
+            this.input.value=value;
             this.setAttribute('value',value);
         }
 
         constructor() {
             super();
+            let self = this;
+            self.search = function(){
+                console.log(self.value);
+            }
             let shadowRoot = this.attachShadow({mode: 'open'});
             this.input = document.createElement('input');
             this.input.placeholder = 'search';
-            this.input.addEventListener('input',this.textInput);
-            this.input.addEventListener('keydown',this.enter);
+            this.input.addEventListener('input', function(event){
+                self.value = this.value;
+            });
+            this.input.addEventListener('keydown',function(event){     
+                if(event.keyCode === 13){
+                    self.search();
+                }
+            });
             this.button = document.createElement('button');
             this.button.innerHTML = 'Search';
-            this.button.addEventListener('click',this.search);
+            this.button.addEventListener('click',function(){
+                self.search();
+            });
 
             shadowRoot.appendChild(this.input);
             shadowRoot.appendChild(this.button);
         }
 
-        enter (e){
-          if(e.keyCode === 13){
-            console.log(this.parentNode.value);
-          }
-        }
-
-        search (e){
-            console.log(this.parentNode.value);
-        }
-
-        textInput (e){
-          this.parentNode.value = this.value;
-          // value(this.value);
-        }
-
-        connectedCallback() {
-            this.index = this.index;
-        }
-
         attributeChangedCallback(attrName, oldValue, newValue) {
             if (attrName === 'value') this.value = newValue;
         }
-
     }
 
     window.customElements.define('search-component', SearchComponent);
